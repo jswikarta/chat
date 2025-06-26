@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import Button from "../components/Button";
 import Input from "../components/Input";
 import ListRoom from "./components/ListRoom";
 
@@ -14,20 +13,6 @@ export default function Sidebar({
   const [roomsData2, setRoomsData2] = useState([]);
 
   useEffect(() => {
-    const guid = Math.random().toString(36).substring(2, 15);
-
-    ws.onopen = () => {
-      ws.send(
-        JSON.stringify({
-          command: "subscribe",
-          identifier: JSON.stringify({
-            id: guid,
-            channel: "RoomChannel",
-          }),
-        }),
-      );
-    };
-
     ws.onmessage = (e) => {
       const data = JSON.parse(e.data);
       if (data.type === "ping") return;

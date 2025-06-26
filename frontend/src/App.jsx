@@ -3,6 +3,8 @@ import Sidebar from "./layouts/Sidebar";
 import ModalLogin from "./modals/ModalLogin";
 import ModalRoom from "./modals/ModalRoom";
 import Chat from "./layouts/Chat";
+import ChatChannel from "./channels/Chat";
+import RoomChannel from "./channels/Room";
 
 const ws = new WebSocket("ws://localhost:3000/cable");
 
@@ -12,27 +14,14 @@ export default function App() {
   const [showModalLogin, setShowModalLogin] = useState(false);
 
   useEffect(() => {
-    if (selectedRoom) {
-      const identifier = JSON.stringify({
-        channel: "ChatChannel",
-        room_id: selectedRoom.id,
-      });
+    ws.onopen = () => {
+      RoomChannel(ws);
+    };
+  }, []);
 
-      ws.send(
-        JSON.stringify({
-          command: "subscribe",
-          identifier: identifier,
-        }),
-      );
-
-      return () => {
-        ws.send(
-          JSON.stringify({
-            command: "unsubscribe",
-            identifier: identifier,
-          }),
-        );
-      };
+  useEffect(() => {
+    if (selectedRoom && selectedRoom.id) {
+      ChatChannel(ws, selectedRoom.id);
     }
   }, [selectedRoom]);
 
